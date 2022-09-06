@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+
+
+    <h1>Login</h1>
+    <!-- <form action="" method="post">
+        {% csrf_token %}
+        
+        <p>username: <input type="text" name="username"></p>
+        <p>password: <input type="password" name="password"></p>
+        <button>Kirish</button>
+    </form>
+    <br> -->
+    <form action="https://sso.egov.uz/sso/oauth/Authorization.do" method="get">
+        <input type="hidden" name="response_type" value="one_code">
+        <input type="hidden" name="redirect_uri" value="http://127.0.0.1:8000/code/">
+        <input type="hidden" name="scope" value="unicon_yagona_billing">
+        <input type="hidden" name="state" value="Uzbekistan">
+        <input type="hidden" name="client_id" value="unicon_yagona_billing">
+        <input type="hidden" name="client_secret" value="N3nk50XmyQFqijewiohDFZdB">
+        <button>one id</button>
+    </form>
+
+
+    <script>
+        console.log('https://sso.egov.uz/sso/oauth/Authorization.do');
+    </script>
+
+</body>
+</html>
