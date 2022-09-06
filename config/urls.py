@@ -21,5 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.loginReg, name='redirect_url'),
     path('code/', views.code, name='code'),
+    path('register/', views.register, name='register'),
+    path('dashboard/<str:username>/', views.dashboard, name='dashboard'),
     # path('id.egov.uz/login/<str:test>/', views.test)
 ]

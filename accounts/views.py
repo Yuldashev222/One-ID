@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import User
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
+from .forms import UserCr
 
 # from .serializers import User
 
@@ -17,14 +18,16 @@ def loginReg(request, *args, **kwargs):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            return render(request, 'index.html', {'user': user})
+            return redirect('dashboard', user.username)
         else:
             return redirect('redirect_url')
         
     return render(request, 'login.html')
 
 
-def code(request):  
+def code(request): 
+    if request.user.is_authenticated:
+        return redirect('dashboard', request.user.username)
     code = request.GET.get('code')
     grant_type = 'one_authorization_code'
     client_id = 'unicon_yagona_billing'
@@ -44,27 +47,45 @@ def code(request):
     
     req = requests.post(url=url, params=data)
     
-    username = dict(req.json()).get('user_id')  
-    password = dict(req.json()).get('sess_id')
+    username = dict(req.json()).get('user_id')
+      
+    # password = dict(req.json()).get('sess_id')
 
     users = list(map(lambda item: item[0], User.objects.all().values_list('username')))
     
-    if username in users:
-        if User.objects.get(username=username).is_authenticated:
-            return render(request, 'index.html', {'user': User.objects.get(username=username)})
-        else:
-            user = authenticate(request, username=username, password=password)
-        
-    else:
+    try: 
+        user = User.objects.get(username=username)
+    except:
+        user = None
+    
+    if not user:
         user = User.objects.create(username=username)
-        user.set_password(password)
-    
-    
-    user.first_name = dict(req.json()).get('first_name')
-    user.last_name = dict(req.json()).get('sur_name')
-    user.address = dict(req.json()).get('per_adr')
-    user.save()
-    
+        user.first_name = dict(req.json()).get('first_name')
+        user.last_name = dict(req.json()).get('sur_name')
+        user.address = dict(req.json()).get('per_adr')
+        user.save()
+        
     login(request, user)
+        
+    return redirect('dashboard', user.username)        
+        
+    
+def register(request):
+    form = UserCr()
+    if request.POST:
+        form = UserCr(request.POST)
 
+        if form.is_valid():
+            form.save()
+                    
+            return redirect('redirect_url')
+
+    return render(request, 'register.html', {'form': form})
+
+
+def dashboard(request, username):
+
+    user = User.objects.get(username=username)
+    
     return render(request, 'index.html', {'user': user})
+    
