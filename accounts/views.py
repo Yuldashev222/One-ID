@@ -12,6 +12,9 @@ from .forms import UserCr
 
 
 def loginReg(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        return redirect('dashboard', request.user.username)
+    
     if request.POST:
         username = request.POST['username']
         password = request.POST['password']
@@ -26,8 +29,6 @@ def loginReg(request, *args, **kwargs):
 
 
 def code(request): 
-    if request.user.is_authenticated:
-        return redirect('dashboard', request.user.username)
     code = request.GET.get('code')
     grant_type = 'one_authorization_code'
     client_id = 'unicon_yagona_billing'
